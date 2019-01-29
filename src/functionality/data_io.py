@@ -3,7 +3,7 @@ import json
 
 def get_user_budget_settings():
     try:
-        user_data_file = open("../../data/user_data.txt", "r")
+        user_data_file = open("../../data/user_data.json", "r")
     except FileNotFoundError:
         print("User data file not found.")
         return None
@@ -15,7 +15,7 @@ def get_user_budget_settings():
 
 def get_user_expenses_data():
     try:
-        user_expenses_file = open("../../data/user_expenses.txt", "r")
+        user_expenses_file = open("../../data/user_expenses.json", "r")
     except FileNotFoundError:
         print("User expenses file not found.")
         return None
@@ -25,6 +25,14 @@ def get_user_expenses_data():
         return user_expenses
 
 
+def store_data(file_path, data):
+    to_write = json.dumps(data);
+    data_file = open(file_path, "w")
+    data_file.write(to_write)
+
+
 #test that file i/o is working
 #print(get_user_budget_settings())
 #print(get_user_expenses_data())
+#store_data("../../data/user_expenses.json", get_user_expenses_data())
+
