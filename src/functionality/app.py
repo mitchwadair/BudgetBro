@@ -16,20 +16,20 @@ def display_home_view():
 
 
 def add_new_expense(category, year, month, location, amount):
-    if category in user_expense_data["categories"]:
+    if category in user_expense_data:
         # add data to existing category
-        if year in user_expense_data["categories"][category]:
-            if month in user_expense_data["categories"][category][year]:
-                entries = len(user_expense_data["categories"][category][year][month])
+        if year in user_expense_data[category]:
+            if month in user_expense_data[category][year]:
+                entries = len(user_expense_data[category][year][month])
                 # print(entries)
-                user_expense_data["categories"][category][year][month][entries + 1] = {"location": location, "amount": amount}
+                user_expense_data[category][year][month][entries + 1] = {"location": location, "amount": amount}
             else:
-                user_expense_data["categories"][category][year][month] = {1: {"location": location, "amount": amount}}
+                user_expense_data[category][year][month] = {1: {"location": location, "amount": amount}}
         else:
-            user_expense_data["categories"][category][year] = {month: {1: {"location": location, "amount": amount}}}
+            user_expense_data[category][year] = {month: {1: {"location": location, "amount": amount}}}
     else:
         # create new category and add data to it
-        user_expense_data["categories"][category] = {year: {month: {1: {"location": location, "amount": amount}}}}
+        user_expense_data[category] = {year: {month: {1: {"location": location, "amount": amount}}}}
 
 
 setup()
