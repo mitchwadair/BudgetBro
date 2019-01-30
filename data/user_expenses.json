@@ -1,1 +1,1 @@
-{"categories": {"gas": {"1-29-2019": {"location": "Exxon", "amount": 35.29}}}}
+{"categories": {"gas": {"1-29-2019": {"1": {"location": "Exxon", "amount": 35.29}, "2": {"location": "Shell", "amount": 15.69}, "3": {"location": "BP", "amount": 3.66}}, "1-28-2019": {"1": {"location": "Shell", "amount": 40.69}}}, "new": {"1-29-2019": {"1": {"location": "place", "amount": 4.2}}}}}
