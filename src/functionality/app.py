@@ -1,4 +1,5 @@
 import data_io
+import requests
 
 user_expense_data = None
 user_budget_data = None
@@ -9,14 +10,6 @@ def setup():
     global user_budget_data
     user_expense_data = data_io.get_user_expenses_data()
     user_budget_data = data_io.get_user_budget_settings()
-
-
-def update_expense_data():
-    data_io.store_data("../../data/user_expenses.json", user_expense_data)
-
-
-def update_budget_data():
-    data_io.store_data("../../data/user_data.json", user_budget_data)
 
 
 def display_home_view():
@@ -49,6 +42,18 @@ def edit_expense(category, year, month, index, data):
 def remove_expense(category, year, month, index):
     del user_expense_data[category][year][month][index]
     update_expense_data()
+
+
+def update_expense_data():
+    data_io.store_data("../../data/user_expenses.json", user_expense_data)
+
+
+def fetch_tax_information(year, gross_income, state, filing_status):
+    return None
+
+
+def update_budget_data():
+    data_io.store_data("../../data/user_data.json", user_budget_data)
 
 
 setup()
