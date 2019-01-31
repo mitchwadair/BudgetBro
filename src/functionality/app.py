@@ -127,7 +127,7 @@ def fetch_tax_information(year, gross_income, state, filing_status):
 
 
 def calculate_hourly_to_salary(wage, avg_hours, expected_weeks):
-    return wage*avg_hours*expected_weeks;
+    return wage*avg_hours*expected_weeks
 
 
 def update_budget_data():
