@@ -12,6 +12,7 @@
       <option name="ignoredIdentifiers">
         <list>
           <option value="data_io" />
+          <option value="user" />
         </list>
       </option>
     </inspection_tool>

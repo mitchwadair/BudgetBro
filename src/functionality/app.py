@@ -1,15 +1,22 @@
 import data_io
 import requests
+import json
+import user
 
 user_expense_data = None
 user_budget_data = None
+
+app_user = None
 
 
 def setup():
     global user_expense_data
     global user_budget_data
+    global app_user
     user_expense_data = data_io.get_user_expenses_data()
     user_budget_data = data_io.get_user_budget_settings()
+    
+    # app_user = user.User("Mitch", 76000, "NC", "single", post_tax_funds, post_tax_monthly_funds, user_budget_data, user_expense_data)
 
 
 def display_home_view():
@@ -48,6 +55,14 @@ def update_expense_data():
     data_io.store_data("../../data/user_expenses.json", user_expense_data)
 
 
+def calculate_post_tax_funds(year, state, filing_status, salary, retirement_cont, msa_cont):
+    gross_income = salary - (salary*retirement_cont) - msa_cont
+    tax_info = json.loads(fetch_tax_information(year, gross_income, state, filing_status))["annual"]
+    post_tax_funds = gross_income - (tax_info["fica"]["amount"] + tax_info["federal"]["amount"] + tax_info["state"]["amount"])
+    post_tax_funds_by_month = post_tax_funds / 12
+    return {'annual': post_tax_funds, 'monthly': post_tax_funds_by_month}
+
+
 def fetch_tax_information(year, gross_income, state, filing_status):
     year = str(year)
     gross_income = str(gross_income)
@@ -70,7 +85,7 @@ def fetch_tax_information(year, gross_income, state, filing_status):
         return None
 
 
-def calculate_hourly_gross_income(wage, avg_hours, expected_weeks):
+def calculate_hourly_to_salary(wage, avg_hours, expected_weeks):
     return wage*avg_hours*expected_weeks;
 
 
@@ -81,7 +96,7 @@ def update_budget_data():
 setup()
 display_home_view()
 
-# print(fetch_tax_information(2019, 50000, "NC", "single"))
+print(calculate_post_tax_funds(2019, "NC", "single", 100000, .19, 3100))
 # add_new_expense("gas", "2019", "1", {"location": "Shell", "amount": 4.20})
 # remove_expense("other", "2018", "2", 0)
 # edit_expense("gas", "2019", "1", 1, {"location":"BP", "amount":4.20})
