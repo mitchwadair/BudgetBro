@@ -35,7 +35,7 @@ def get_user_expenses_data():
 
 
 def store_data(file_path, data):
-    to_write = json.dumps(data);
+    to_write = json.dumps(data, indent=2);
     data_file = open(file_path, "w")
     data_file.write(to_write)
     data_file.close()
