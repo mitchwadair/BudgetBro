@@ -139,6 +139,6 @@ display_home_view()
 
 # print(calculate_post_tax_funds(2019, "NC", "single", 100000, .19, 3100))
 # add_new_expense("gas", "2019", "1", {"location": "Shell", "amount": 4.20})
-remove_expense("gas", "2019", "1", 0)
+# remove_expense("gas", "2019", "1", 0)
 # edit_expense("gas", "2019", "1", 1, {"location":"BP", "amount":4.20})
 # print(user_expense_data)

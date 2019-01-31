@@ -4,8 +4,6 @@
     <list default="true" id="08d2ddd5-0dac-49c6-bd5a-52c1c2b1c7b6" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/functionality/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/functionality/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/functionality/data_io.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/functionality/data_io.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/functionality/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/functionality/user.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -34,7 +32,7 @@
         <entry file="file://$PROJECT_DIR$/src/functionality/app.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="484">
-              <caret line="141" column="19" selection-start-line="141" selection-start-column="19" selection-end-line="141" selection-end-column="19" />
+              <caret line="141" column="2" selection-start-line="141" selection-start-column="2" selection-end-line="141" selection-end-column="2" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
               </folding>
@@ -47,15 +45,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="204">
               <caret line="12" column="90" selection-start-line="12" selection-start-column="90" selection-end-line="12" selection-end-column="90" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret column="6" selection-start-column="6" selection-end-column="6" />
             </state>
           </provider>
         </entry>
@@ -304,7 +293,14 @@
       <option name="project" value="LOCAL" />
       <updated>1548899216268</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="adds creation of user, makes json output pretty, adds additional income parameter to user class">
+      <created>1548903406318</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1548903406318</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TodoView">
@@ -353,7 +349,8 @@
     <MESSAGE value="adds gitignore, should remove unnecessary files from repo" />
     <MESSAGE value="missing path handling on data i/o, begin income tool" />
     <MESSAGE value="adds user class" />
-    <option name="LAST_COMMIT_MESSAGE" value="adds user class" />
+    <MESSAGE value="adds creation of user, makes json output pretty, adds additional income parameter to user class" />
+    <option name="LAST_COMMIT_MESSAGE" value="adds creation of user, makes json output pretty, adds additional income parameter to user class" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/functionality/user_data.txt" />
@@ -370,20 +367,6 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/data/Mitch/user_data">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/functionality/user.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="12" column="90" selection-start-line="12" selection-start-column="90" selection-end-line="12" selection-end-column="90" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/data/user_expenses.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="1" selection-start-column="1" selection-end-column="1" />
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/data/user_data.json">
       <provider selected="true" editor-type-id="text-editor">
@@ -409,10 +392,24 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/data/user_expenses.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="1" selection-start-column="1" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/functionality/user.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="12" column="90" selection-start-line="12" selection-start-column="90" selection-end-line="12" selection-end-column="90" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/functionality/app.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="484">
-          <caret line="141" column="19" selection-start-line="141" selection-start-column="19" selection-end-line="141" selection-end-column="19" />
+          <caret line="141" column="2" selection-start-line="141" selection-start-column="2" selection-end-line="141" selection-end-column="2" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
           </folding>
