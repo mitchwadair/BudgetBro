@@ -49,7 +49,29 @@ def update_expense_data():
 
 
 def fetch_tax_information(year, gross_income, state, filing_status):
-    return None
+    year = str(year)
+    gross_income = str(gross_income)
+    api_key_file = open("../../data/taxee_api.txt", "r")
+    api_key = api_key_file.read()
+    api_key_file.close()
+    headers = {
+        'Authorization': api_key,
+        'Content-Type': 'application/x-www-form-urlencoded',
+    }
+    data = {
+        'state': state,
+        'filing_status': filing_status,
+        'pay_rate': gross_income
+    }
+    response = requests.post('https://taxee.io/api/v2/calculate/' + year, headers=headers, data=data)
+    if response.status_code == 200:
+        return response.text
+    else:
+        return None
+
+
+def calculate_hourly_gross_income(wage, avg_hours, expected_weeks):
+    return wage*avg_hours*expected_weeks;
 
 
 def update_budget_data():
@@ -59,6 +81,7 @@ def update_budget_data():
 setup()
 display_home_view()
 
+# print(fetch_tax_information(2019, 50000, "NC", "single"))
 # add_new_expense("gas", "2019", "1", {"location": "Shell", "amount": 4.20})
 # remove_expense("other", "2018", "2", 0)
 # edit_expense("gas", "2019", "1", 1, {"location":"BP", "amount":4.20})
