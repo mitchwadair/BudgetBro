@@ -142,13 +142,33 @@ def calculate_hourly_to_salary(wage, avg_hours, expected_weeks):
     return wage*avg_hours*expected_weeks
 
 
+def create_budget():
+    global user_budget_data
+    current_year = datetime.datetime.today().year
+    budget = {current_year: {1: {}}}
+    user_budget_data = budget
+    update_budget_data()
+
+
+def change_budget(year, month, category, amount):
+    if year in user_budget_data:
+        if month in user_budget_data[year]:
+            user_budget_data[year][month][category] = amount
+        else:
+            user_budget_data[year][month] = {category: amount}
+    else:
+        user_budget_data[year] = {month: {category: amount}}
+    update_budget_data(app_user.name)
+
+
 def update_budget_data():
-    data_io.store_data("../../data/user_data.json", user_budget_data)
+    data_io.store_data("../../data/" + app_user.name + "/user_budget.json", user_budget_data)
 
 
 setup()
 display_home_view()
 
+# create_budget()
 # print(calculate_post_tax_funds(2019, "NC", "single", 100000, .19, 3100))
 # add_new_expense("gas", "2019", "1", {"location": "Shell", "amount": 4.20})
 # remove_expense("gas", "2019", "1", 0)
