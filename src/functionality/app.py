@@ -17,8 +17,6 @@ def setup():
     global user_expense_data
     global user_budget_data
     global app_user
-    user_expense_data = data_io.get_user_expenses_data()
-    user_budget_data = data_io.get_user_budget_settings()
     dirs = [d for d in os.listdir('../../data') if os.path.isdir(os.path.join('../../data', d))]
     if len(dirs) == 0:
         print("No users stored. Prompt to create one")
@@ -47,6 +45,8 @@ def setup():
         app_user = pickle.load(data_file)
         data_file.close()
         print(repr(app_user))
+    user_expense_data = data_io.get_user_expenses_data(app_user.name)
+    user_budget_data = data_io.get_user_budget_settings(app_user.name)
 
 
 def create_user_profile():
@@ -91,21 +91,21 @@ def add_new_expense(category, year, month, data):
     else:
         # create new category and add data to it
         user_expense_data[category] = {year: {month: [data]}}
-    update_expense_data()
+    update_expense_data(app_user.name)
 
 
 def edit_expense(category, year, month, index, data):
     user_expense_data[category][year][month][index] = data
-    update_expense_data()
+    update_expense_data(app_user.name)
 
 
 def remove_expense(category, year, month, index):
     del user_expense_data[category][year][month][index]
-    update_expense_data()
+    update_expense_data(app_user.name)
 
 
-def update_expense_data():
-    data_io.store_data("../../data/user_expenses.json", user_expense_data)
+def update_expense_data(name):
+    data_io.store_data("../../data/" + name + "/user_expenses.json", user_expense_data)
 
 
 def calculate_post_tax_funds(year, state, filing_status, salary, additional_inc, retirement_cont, hsa_cont):

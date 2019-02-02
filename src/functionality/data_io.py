@@ -2,10 +2,10 @@ import json
 import os
 
 
-def get_user_budget_settings():
+def get_user_budget_settings(name):
     if os.path.exists("../../data"):
         try:
-            user_data_file = open("../../data/user_data.json", "r")
+            user_data_file = open("../../data/" + name + "/user_budget.json", "r")
         except FileNotFoundError:
             print("User data file not found.")
             return None
@@ -15,13 +15,13 @@ def get_user_budget_settings():
             return user_data
     else:
         os.mkdir("../../data")
-        get_user_budget_settings()
+        get_user_budget_settings(name)
 
 
-def get_user_expenses_data():
+def get_user_expenses_data(name):
     if os.path.exists("../../data"):
         try:
-            user_expenses_file = open("../../data/user_expenses.json", "r")
+            user_expenses_file = open("../../data/" + name + "/user_expenses.json", "r")
         except FileNotFoundError:
             print("User expenses file not found.")
             return None
@@ -31,7 +31,7 @@ def get_user_expenses_data():
             return user_expenses
     else:
         os.mkdir("../../data")
-        get_user_expenses_data()
+        get_user_expenses_data(name)
 
 
 def store_data(file_path, data):
