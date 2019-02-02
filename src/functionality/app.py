@@ -35,6 +35,18 @@ def setup():
         print(repr(app_user))
     else:
         print("More than one user found.  Prompt for use choice")
+        print("Please select the user to load:")
+        options = ""
+        count = 1
+        for d in dirs:
+            options = options + "[" + str(count) + "] " + d + " "
+            count = count + 1
+        print(options)
+        selection = int(input())
+        data_file = open("../../data/" + dirs[selection - 1] + "/user_data", "rb")
+        app_user = pickle.load(data_file)
+        data_file.close()
+        print(repr(app_user))
 
 
 def create_user_profile():
