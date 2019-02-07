@@ -23,8 +23,9 @@ def get_user_expenses_data(name):
         try:
             user_expenses_file = open("../../data/" + name + "/user_expenses.json", "r")
         except FileNotFoundError:
-            print("User expenses file not found.")
-            return None
+            print("User expenses file not found... Creating a new one.")
+            store_data("../../data/" + name + "/user_expenses.json", {})
+            get_user_expenses_data(name)
         else:
             user_expenses = json.loads(user_expenses_file.read())
             user_expenses_file.close()
