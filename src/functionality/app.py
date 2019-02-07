@@ -7,9 +7,9 @@ import os
 import datetime
 import pickle
 
-user_expense_data = None
-user_budget_data = None
-budget_performance_data = None
+user_expense_data = {}
+user_budget_data = {}
+budget_performance_data = {}
 
 app_user = None
 
@@ -17,6 +17,7 @@ app_user = None
 def setup():
     global user_expense_data
     global user_budget_data
+    global budget_performance_data
     global app_user
     dirs = [d for d in os.listdir('../../data') if os.path.isdir(os.path.join('../../data', d))]
     if len(dirs) == 0:
@@ -177,14 +178,40 @@ def update_budget_data():
 
 
 def calculate_budget_performance():
+    for y in sorted(user_budget_data):
+        if y not in budget_performance_data:
+            budget_performance_data[y] = {}
+            for m in sorted(user_budget_data[y]):
+                budget_performance_data[y][m] = {}
+                for c in user_budget_data[y][m]:
+                    if c in user_expense_data:
+                        if y in user_expense_data[c]:
+                            if m in user_expense_data[c][y]:
+                                expense_sum = 0
+                                for data in user_expense_data[c][y][m]:
+                                    expense_sum += data["amount"]
+                                budget_performance_data[y][m][c] = {"budgeted": user_budget_data[y][m][c], "spent": expense_sum}
+                            else:
+                                budget_performance_data[y][m][c] = {"budgeted": user_budget_data[y][m][c], "spent": 0}
+                        else:
+                            budget_performance_data[y][m][c] = {"budgeted": user_budget_data[y][m][c], "spent": 0}
+                    else:
+                        budget_performance_data[y][m][c] = {"budgeted": user_budget_data[y][m][c], "spent": 0}
+        else:
+            print("TODO")
+            # TODO calculate for any missing months, then any missing categories
 
-    for k in sorted(user_budget_data):
+    update_budget_performance_data()
 
+
+def update_budget_performance_data():
+    data_io.store_data("../../data/" + app_user.name + "/budget_performance.json", budget_performance_data)
 
 
 setup()
 display_home_view()
 
+calculate_budget_performance()
 # create_budget()
 # print(calculate_post_tax_funds(2019, "NC", "single", 100000, .19, 3100))
 # add_new_expense("gas", "2019", "1", {"location": "Shell", "amount": 4.20})
