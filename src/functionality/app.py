@@ -153,11 +153,20 @@ def create_budget():
 def change_budget(year, month, category, amount):
     if year in user_budget_data:
         if month in user_budget_data[year]:
-            user_budget_data[year][month][category] = amount
+            if category is None:
+                user_budget_data[year][month] = "s"
+            else:
+                user_budget_data[year][month][category] = amount
         else:
-            user_budget_data[year][month] = {category: amount}
+            if category is None:
+                user_budget_data[year][month] = "s"
+            else:
+                user_budget_data[year][month] = {category: amount}
     else:
-        user_budget_data[year] = {month: {category: amount}}
+        if category is None:
+            user_budget_data[year] = {month: "s"}
+        else:
+            user_budget_data[year] = {month: {category: amount}}
     update_budget_data(app_user.name)
 
 
