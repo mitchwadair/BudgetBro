@@ -35,6 +35,23 @@ def get_user_expenses_data(name):
         get_user_expenses_data(name)
 
 
+def get_budget_performance_data(name):
+    if os.path.exists("../../data"):
+        try:
+            budget_performance_file = open("../../data/" + name + "/budget_performance.json", "r")
+        except FileNotFoundError:
+            print("User expense performance file not found... Creating a new one.")
+            store_data("../../data/" + name + "/budget_performance.json", {})
+            get_budget_performance_data(name)
+        else:
+            budget_performance = json.loads(budget_performance_file.read())
+            budget_performance_file.close()
+            return budget_performance
+    else:
+        os.mkdir("../../data")
+        get_budget_performance_data(name)
+
+
 def store_data(file_path, data):
     to_write = json.dumps(data, indent=2);
     data_file = open(file_path, "w")

@@ -9,6 +9,7 @@ import pickle
 
 user_expense_data = None
 user_budget_data = None
+budget_performance_data = None
 
 app_user = None
 
@@ -47,6 +48,7 @@ def setup():
         print(repr(app_user))
     user_expense_data = data_io.get_user_expenses_data(app_user.name)
     user_budget_data = data_io.get_user_budget_settings(app_user.name)
+    budget_performance_data = data_io.get_budget_performance_data(app_user.name)
 
 
 def create_user_profile():
@@ -172,6 +174,12 @@ def change_budget(year, month, category, amount):
 
 def update_budget_data():
     data_io.store_data("../../data/" + app_user.name + "/user_budget.json", user_budget_data)
+
+
+def calculate_budget_performance():
+
+    for k in sorted(user_budget_data):
+
 
 
 setup()
