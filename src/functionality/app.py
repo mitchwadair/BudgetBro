@@ -177,39 +177,21 @@ def update_budget_data():
     data_io.store_data("../../data/" + app_user.name + "/user_budget.json", user_budget_data)
 
 
-def calculate_budget_performance():
-    global budget_performance_data
-    if budget_performance_data is None:
-        budget_performance_data = {}
-    for y in sorted(user_budget_data):
-        if y not in budget_performance_data:
-            budget_performance_data[y] = {}
-            calculate_budget_performance()
-        for m in sorted(user_budget_data[y]):
-            if m not in budget_performance_data[y]:
-                budget_performance_data[y][m] = {}
+def calculate_budget_performance(year=None, month=None):
+    if year is None or month is None:
+        global budget_performance_data
+        if budget_performance_data is None:
+            budget_performance_data = {}
+        for y in sorted(user_budget_data):
+            if y not in budget_performance_data:
+                budget_performance_data[y] = {}
                 calculate_budget_performance()
-            for c in user_budget_data[y][m]:
-                expenses_added = False
-                if c in user_expense_data:
-                    if y in user_expense_data[c]:
-                        if m in user_expense_data[c][y]:
-                            expense_sum = 0
-                            for data in user_expense_data[c][y][m]:
-                                expense_sum += data["amount"]
-                            budget_performance_data[y][m][c] = {"budgeted": user_budget_data[y][m][c], "spent": expense_sum}
-                            update_budget_performance_data()
-                            expenses_added = True
-                if not expenses_added:
-                    budget_performance_data[y][m][c] = {"budgeted": user_budget_data[y][m][c], "spent": 0}
-    update_budget_performance_data()
-    '''
-    for y in sorted(user_budget_data):
-        if y not in budget_performance_data:
-            budget_performance_data[y] = {}
             for m in sorted(user_budget_data[y]):
-                budget_performance_data[y][m] = {}
+                if m not in budget_performance_data[y]:
+                    budget_performance_data[y][m] = {}
+                    calculate_budget_performance()
                 for c in user_budget_data[y][m]:
+                    expenses_added = False
                     if c in user_expense_data:
                         if y in user_expense_data[c]:
                             if m in user_expense_data[c][y]:
@@ -217,16 +199,28 @@ def calculate_budget_performance():
                                 for data in user_expense_data[c][y][m]:
                                     expense_sum += data["amount"]
                                 budget_performance_data[y][m][c] = {"budgeted": user_budget_data[y][m][c], "spent": expense_sum}
-                            else:
-                                budget_performance_data[y][m][c] = {"budgeted": user_budget_data[y][m][c], "spent": 0}
-                        else:
-                            budget_performance_data[y][m][c] = {"budgeted": user_budget_data[y][m][c], "spent": 0}
-                    else:
+                                update_budget_performance_data()
+                                expenses_added = True
+                    if not expenses_added:
                         budget_performance_data[y][m][c] = {"budgeted": user_budget_data[y][m][c], "spent": 0}
-        else:
-            print("TODO")
-            # TODO calculate for any missing months, then any missing categories
-    '''
+        update_budget_performance_data()
+    else:
+        year = str(year)
+        month = str(month)
+        for c in user_budget_data[year][month]:
+            expenses_added = False
+            if c in user_expense_data:
+                if year in user_expense_data[c]:
+                    if month in user_expense_data[c][year]:
+                        expense_sum = 0
+                        for data in user_expense_data[c][year][month]:
+                            expense_sum += data["amount"]
+                        budget_performance_data[year][month][c] = {"budgeted": user_budget_data[year][month][c], "spent": expense_sum}
+                        update_budget_performance_data()
+                        expenses_added = True
+            if not expenses_added:
+                budget_performance_data[year][month][c] = {"budgeted": user_budget_data[year][month][c], "spent": 0}
+        update_budget_performance_data()
 
 
 def update_budget_performance_data():
@@ -236,7 +230,7 @@ def update_budget_performance_data():
 setup()
 display_home_view()
 
-calculate_budget_performance()
+calculate_budget_performance(2019, 1)
 # create_budget()
 # print(calculate_post_tax_funds(2019, "NC", "single", 100000, .19, 3100))
 # add_new_expense("gas", "2019", "1", {"location": "Shell", "amount": 4.20})
