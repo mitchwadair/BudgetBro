@@ -178,6 +178,32 @@ def update_budget_data():
 
 
 def calculate_budget_performance():
+    global budget_performance_data
+    if budget_performance_data is None:
+        budget_performance_data = {}
+    for y in sorted(user_budget_data):
+        if y not in budget_performance_data:
+            budget_performance_data[y] = {}
+            calculate_budget_performance()
+        for m in sorted(user_budget_data[y]):
+            if m not in budget_performance_data[y]:
+                budget_performance_data[y][m] = {}
+                calculate_budget_performance()
+            for c in user_budget_data[y][m]:
+                expenses_added = False
+                if c in user_expense_data:
+                    if y in user_expense_data[c]:
+                        if m in user_expense_data[c][y]:
+                            expense_sum = 0
+                            for data in user_expense_data[c][y][m]:
+                                expense_sum += data["amount"]
+                            budget_performance_data[y][m][c] = {"budgeted": user_budget_data[y][m][c], "spent": expense_sum}
+                            update_budget_performance_data()
+                            expenses_added = True
+                if not expenses_added:
+                    budget_performance_data[y][m][c] = {"budgeted": user_budget_data[y][m][c], "spent": 0}
+    update_budget_performance_data()
+    '''
     for y in sorted(user_budget_data):
         if y not in budget_performance_data:
             budget_performance_data[y] = {}
@@ -200,8 +226,7 @@ def calculate_budget_performance():
         else:
             print("TODO")
             # TODO calculate for any missing months, then any missing categories
-
-    update_budget_performance_data()
+    '''
 
 
 def update_budget_performance_data():
