@@ -1,9 +1,14 @@
 import os
+import pickle
 
 from tkinter import *
 from src.functionality import app
 from src.functionality import user
 from src.functionality import data_io
+
+import tkinter.simpledialog
+
+sys.modules['user'] = user
 
 
 class BudgetApp(Frame):
@@ -24,15 +29,30 @@ class BudgetApp(Frame):
         self.load()
 
     def load(self):
-        dirs = [d for d in os.listdir('../../data') if os.path.isdir(os.path.join('../../data', d))]
-        
-
-        for F in (OverviewPage, ExpensePage):
+        for F in (OverviewPage, ExpensePage, NewUserProfilePage):
             frame = F(self.content_frame, self)
             self.pages[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
 
-        self.load_content_page(OverviewPage)
+        dirs = [d for d in os.listdir('../../data') if os.path.isdir(os.path.join('../../data', d))]
+        if len(dirs) > 0:
+            if len(dirs) == 1:
+                print("one profile, loading it")
+                data_file = open("../../data/" + dirs[0] + "/user_data", "rb")
+                self.app.app_user = pickle.load(data_file)
+                data_file.close()
+                print(repr(self.app.app_user))
+            else:
+                print("multiple profiles, choose")
+
+            self.app.user_expense_data = data_io.get_user_expenses_data(self.app.app_user.name)
+            self.app.user_budget_data = data_io.get_user_budget_settings(self.app.app_user.name)
+            self.app.budget_performance_data = data_io.get_budget_performance_data(self.app.app_user.name)
+
+            self.load_content_page(OverviewPage)
+        else:
+            print("create new profile")
+            self.load_content_page(NewUserProfilePage)
 
         overview_button = Button(self.menu_frame, text="Overview", command=lambda: self.load_content_page(OverviewPage), width=12)
         overview_button.grid(row=0, column=0)
@@ -55,6 +75,12 @@ class ExpensePage(Frame):
     def __init__(self, parent, controller):
         Frame.__init__(self, parent)
         Label(self, text="Expense page").pack()
+
+
+class NewUserProfilePage(Frame):
+    def __init__(self, parent, controller):
+        Frame.__init__(self, parent)
+        Label(self, text="New User Profile page").pack()
 
 
 root = Tk()

@@ -1,4 +1,6 @@
-import data_io
+import sys
+
+from src.functionality import data_io
 from src.functionality import user
 
 import requests
@@ -6,13 +8,15 @@ import json
 import os
 import datetime
 
+sys.modules['user'] = user
+
 
 class App:
     def __init__(self):
         self.user_expense_data = {}
         self.user_budget_data = {}
         self.budget_performance_data = {}
-        self.app_user = user.User()
+        self.app_user = None
 
     @staticmethod
     def create_user_profile(name):
