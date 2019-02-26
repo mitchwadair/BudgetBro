@@ -217,7 +217,7 @@ def update_budget_performance_data():
 setup()
 display_home_view()
 
-calculate_budget_performance(2019, 1)
+calculate_budget_performance()
 # create_budget()
 # print(calculate_post_tax_funds(2019, "NC", "single", 100000, .19, 3100))
 # add_new_expense("gas", "2019", "1", {"location": "Shell", "amount": 4.20})
