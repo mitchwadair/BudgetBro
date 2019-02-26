@@ -1,5 +1,9 @@
+import os
+
 from tkinter import *
-from src import *
+from src.functionality import app
+from src.functionality import user
+from src.functionality import data_io
 
 
 class BudgetApp(Frame):
@@ -15,10 +19,14 @@ class BudgetApp(Frame):
         self.menu_frame.pack(side=LEFT)
 
         self.pages = {}
+        self.app = app.App()
 
         self.load()
 
     def load(self):
+        dirs = [d for d in os.listdir('../../data') if os.path.isdir(os.path.join('../../data', d))]
+        
+
         for F in (OverviewPage, ExpensePage):
             frame = F(self.content_frame, self)
             self.pages[F] = frame
@@ -50,6 +58,6 @@ class ExpensePage(Frame):
 
 
 root = Tk()
-app = BudgetApp(root)
-app.mainloop()
+application = BudgetApp(root)
+application.mainloop()
 

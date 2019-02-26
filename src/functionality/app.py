@@ -1,226 +1,143 @@
 import data_io
-import user
+from src.functionality import user
 
 import requests
 import json
 import os
 import datetime
-import pickle
-
-user_expense_data = {}
-user_budget_data = {}
-budget_performance_data = {}
-
-app_user = None
 
 
-def setup():
-    global user_expense_data
-    global user_budget_data
-    global budget_performance_data
-    global app_user
-    dirs = [d for d in os.listdir('../../data') if os.path.isdir(os.path.join('../../data', d))]
-    if len(dirs) == 0:
-        print("No users stored. Prompt to create one")
-        app_user = create_user_profile()
-        data_file = open("../../data/" + app_user.name + "/user_data", "wb")
-        pickle.dump(app_user, data_file)
-        data_file.close()
-        print(repr(app_user))
-    elif len(dirs) == 1:
-        print("One user found, loading their data")
-        data_file = open("../../data/" + dirs[0] + "/user_data", "rb")
-        app_user = pickle.load(data_file)
-        data_file.close()
-        print(repr(app_user))
-    else:
-        print("More than one user found.  Prompt for use choice")
-        print("Please select the user to load:")
-        options = ""
-        count = 1
-        for d in dirs:
-            options = options + "[" + str(count) + "] " + d + " "
-            count = count + 1
-        print(options)
-        selection = int(input())
-        data_file = open("../../data/" + dirs[selection - 1] + "/user_data", "rb")
-        app_user = pickle.load(data_file)
-        data_file.close()
-        print(repr(app_user))
-    user_expense_data = data_io.get_user_expenses_data(app_user.name)
-    user_budget_data = data_io.get_user_budget_settings(app_user.name)
-    budget_performance_data = data_io.get_budget_performance_data(app_user.name)
+class App:
+    def __init__(self):
+        self.user_expense_data = {}
+        self.user_budget_data = {}
+        self.budget_performance_data = {}
+        self.app_user = user.User()
 
+    @staticmethod
+    def create_user_profile(name):
+        os.mkdir("../../data/" + name)
 
-def create_user_profile():
-    print("Enter your profile name:")
-    name = input()
-    print("Enter your salary:")
-    salary = int(input())
-    print("Enter expected additional income:")
-    additional_inc = float(input())
-    print("Enter your home state:")
-    state = input()
-    print("Enter your tax filing status:")
-    filing_status = input()
-    print("Enter your 401k contribution percentage")
-    ret_cont = float(input()) / 100
-    print("Enter your annual Health Savings Account contribution:")
-    hsa_cont = int(input())
-
-    year = datetime.datetime.today().year
-    post_tax = calculate_post_tax_funds(year, state, filing_status, salary, additional_inc, ret_cont, hsa_cont)
-    os.mkdir("../../data/" + name)
-
-    return user.User(name, salary, additional_inc, state, filing_status, post_tax["annual"], post_tax["monthly"], None)
-
-
-def display_home_view():
-    print("This will display the home view")
-
-
-def add_new_expense(category, year, month, data):
-    if category in user_expense_data:
-        # add data to existing category
-        if year in user_expense_data[category]:
-            if month in user_expense_data[category][year]:
-                entries = len(user_expense_data[category][year][month])
-                # print(entries)
-                user_expense_data[category][year][month].insert(entries, data)
+    def add_new_expense(self, category, year, month, data):
+        if category in self.user_expense_data:
+            # add data to existing category
+            if year in self.user_expense_data[category]:
+                if month in self.user_expense_data[category][year]:
+                    entries = len(self.user_expense_data[category][year][month])
+                    # print(entries)
+                    self.user_expense_data[category][year][month].insert(entries, data)
+                else:
+                    self.user_expense_data[category][year][month] = [data]
             else:
-                user_expense_data[category][year][month] = [data]
+                self.user_expense_data[category][year] = {month: [data]}
         else:
-            user_expense_data[category][year] = {month: [data]}
-    else:
-        # create new category and add data to it
-        user_expense_data[category] = {year: {month: [data]}}
-    update_expense_data(app_user.name)
+            # create new category and add data to it
+            self.user_expense_data[category] = {year: {month: [data]}}
+        self.update_expense_data(self.app_user.name)
 
+    def edit_expense(self, category, year, month, index, data):
+        self.user_expense_data[category][year][month][index] = data
+        self.update_expense_data(self.app_user.name)
 
-def edit_expense(category, year, month, index, data):
-    user_expense_data[category][year][month][index] = data
-    update_expense_data(app_user.name)
+    def remove_expense(self, category, year, month, index):
+        del self.user_expense_data[category][year][month][index]
+        self.update_expense_data(self.app_user.name)
 
+    def update_expense_data(self, name):
+        data_io.store_data("../../data/" + name + "/user_expenses.json", self.user_expense_data)
 
-def remove_expense(category, year, month, index):
-    del user_expense_data[category][year][month][index]
-    update_expense_data(app_user.name)
+    @staticmethod
+    def calculate_post_tax_funds(year, state, filing_status, salary, additional_inc, retirement_cont, hsa_cont):
+        gross_income = (salary + additional_inc) - (salary*retirement_cont) - hsa_cont
+        tax_info = json.loads(App.fetch_tax_information(year, gross_income, state, filing_status))["annual"]
+        post_tax_funds = gross_income - (tax_info["fica"]["amount"] + tax_info["federal"]["amount"] + tax_info["state"]["amount"])
+        post_tax_funds_by_month = post_tax_funds / 12
+        return {'annual': post_tax_funds, 'monthly': post_tax_funds_by_month}
 
-
-def update_expense_data(name):
-    data_io.store_data("../../data/" + name + "/user_expenses.json", user_expense_data)
-
-
-def calculate_post_tax_funds(year, state, filing_status, salary, additional_inc, retirement_cont, hsa_cont):
-    gross_income = (salary + additional_inc) - (salary*retirement_cont) - hsa_cont
-    tax_info = json.loads(fetch_tax_information(year, gross_income, state, filing_status))["annual"]
-    post_tax_funds = gross_income - (tax_info["fica"]["amount"] + tax_info["federal"]["amount"] + tax_info["state"]["amount"])
-    post_tax_funds_by_month = post_tax_funds / 12
-    return {'annual': post_tax_funds, 'monthly': post_tax_funds_by_month}
-
-
-def fetch_tax_information(year, gross_income, state, filing_status):
-    year = str(year)
-    gross_income = str(gross_income)
-    api_key_file = open("../../data/taxee_api.txt", "r")
-    api_key = api_key_file.read()
-    api_key_file.close()
-    headers = {
-        'Authorization': api_key,
-        'Content-Type': 'application/x-www-form-urlencoded',
-    }
-    data = {
-        'state': state,
-        'filing_status': filing_status,
-        'pay_rate': gross_income
-    }
-    response = requests.post('https://taxee.io/api/v2/calculate/' + year, headers=headers, data=data)
-    if response.status_code == 200:
-        return response.text
-    else:
-        return None
-
-
-def calculate_hourly_to_salary(wage, avg_hours, expected_weeks):
-    return wage*avg_hours*expected_weeks
-
-
-def create_budget():
-    global user_budget_data
-    current_year = datetime.datetime.today().year
-    budget = {current_year: {1: {}}}
-    user_budget_data = budget
-    update_budget_data()
-
-
-def change_budget(year, month, category, amount):
-    if year in user_budget_data:
-        if month in user_budget_data[year]:
-            if category is None:
-                user_budget_data[year][month] = "s"
-            else:
-                user_budget_data[year][month][category] = amount
-        else:
-            if category is None:
-                user_budget_data[year][month] = "s"
-            else:
-                user_budget_data[year][month] = {category: amount}
-    else:
-        if category is None:
-            user_budget_data[year] = {month: "s"}
-        else:
-            user_budget_data[year] = {month: {category: amount}}
-    update_budget_data(app_user.name)
-
-
-def update_budget_data():
-    data_io.store_data("../../data/" + app_user.name + "/user_budget.json", user_budget_data)
-
-
-def calculate_budget_performance(year=None, month=None):
-    if year is None or month is None:
-        global budget_performance_data
-        if budget_performance_data is None:
-            budget_performance_data = {}
-        for y in sorted(user_budget_data):
-            if y not in budget_performance_data:
-                budget_performance_data[y] = {}
-                calculate_budget_performance()
-            for m in sorted(user_budget_data[y]):
-                if m not in budget_performance_data[y]:
-                    budget_performance_data[y][m] = {}
-                    calculate_budget_performance()
-                calculate_budget_performance(y, m)
-    else:
+    @staticmethod
+    def fetch_tax_information(year, gross_income, state, filing_status):
         year = str(year)
-        month = str(month)
-        for c in user_budget_data[year][month]:
-            expenses_added = False
-            if c in user_expense_data:
-                if year in user_expense_data[c]:
-                    if month in user_expense_data[c][year]:
-                        expense_sum = 0
-                        for data in user_expense_data[c][year][month]:
-                            expense_sum += data["amount"]
-                        budget_performance_data[year][month][c] = {"budgeted": user_budget_data[year][month][c], "spent": expense_sum}
-                        update_budget_performance_data()
-                        expenses_added = True
-            if not expenses_added:
-                budget_performance_data[year][month][c] = {"budgeted": user_budget_data[year][month][c], "spent": 0}
-        update_budget_performance_data()
+        gross_income = str(gross_income)
+        api_key_file = open("../../data/taxee_api.txt", "r")
+        api_key = api_key_file.read()
+        api_key_file.close()
+        headers = {
+            'Authorization': api_key,
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
+        data = {
+            'state': state,
+            'filing_status': filing_status,
+            'pay_rate': gross_income
+        }
+        response = requests.post('https://taxee.io/api/v2/calculate/' + year, headers=headers, data=data)
+        if response.status_code == 200:
+            return response.text
+        else:
+            return None
 
+    @staticmethod
+    def calculate_hourly_to_salary(wage, avg_hours, expected_weeks):
+        return wage*avg_hours*expected_weeks
 
-def update_budget_performance_data():
-    data_io.store_data("../../data/" + app_user.name + "/budget_performance.json", budget_performance_data)
+    def create_budget(self):
+        current_year = datetime.datetime.today().year
+        budget = {current_year: {1: {}}}
+        self.user_budget_data = budget
+        self.update_budget_data()
 
+    def change_budget(self, year, month, category, amount):
+        if year in self.user_budget_data:
+            if month in self.user_budget_data[year]:
+                if category is None:
+                    self.user_budget_data[year][month] = "s"
+                else:
+                    self.user_budget_data[year][month][category] = amount
+            else:
+                if category is None:
+                    self.user_budget_data[year][month] = "s"
+                else:
+                    self.user_budget_data[year][month] = {category: amount}
+        else:
+            if category is None:
+                self.user_budget_data[year] = {month: "s"}
+            else:
+                self.user_budget_data[year] = {month: {category: amount}}
+        self.update_budget_data()
 
-setup()
-display_home_view()
+    def update_budget_data(self):
+        data_io.store_data("../../data/" + self.app_user.name + "/user_budget.json", self.user_budget_data)
 
-calculate_budget_performance()
-# create_budget()
-# print(calculate_post_tax_funds(2019, "NC", "single", 100000, .19, 3100))
-# add_new_expense("gas", "2019", "1", {"location": "Shell", "amount": 4.20})
-# remove_expense("gas", "2019", "1", 0)
-# edit_expense("gas", "2019", "1", 1, {"location":"BP", "amount":4.20})
-# print(user_expense_data)
+    def calculate_budget_performance(self, year=None, month=None):
+        if year is None or month is None:
+            if self.budget_performance_data is None:
+                self.budget_performance_data = {}
+            for y in sorted(self.user_budget_data):
+                if y not in self.budget_performance_data:
+                    self.budget_performance_data[y] = {}
+                    self.calculate_budget_performance()
+                for m in sorted(self.user_budget_data[y]):
+                    if m not in self.budget_performance_data[y]:
+                        self.budget_performance_data[y][m] = {}
+                        self.calculate_budget_performance()
+                    self.calculate_budget_performance(y, m)
+        else:
+            year = str(year)
+            month = str(month)
+            for c in self.user_budget_data[year][month]:
+                expenses_added = False
+                if c in self.user_expense_data:
+                    if year in self.user_expense_data[c]:
+                        if month in self.user_expense_data[c][year]:
+                            expense_sum = 0
+                            for data in self.user_expense_data[c][year][month]:
+                                expense_sum += data["amount"]
+                            self.budget_performance_data[year][month][c] = {"budgeted": self.user_budget_data[year][month][c], "spent": expense_sum}
+                            self.update_budget_performance_data()
+                            expenses_added = True
+                if not expenses_added:
+                    self.budget_performance_data[year][month][c] = {"budgeted": self.user_budget_data[year][month][c], "spent": 0}
+            self.update_budget_performance_data()
+
+    def update_budget_performance_data(self):
+        data_io.store_data("../../data/" + self.app_user.name + "/budget_performance.json", self.budget_performance_data)
