@@ -80,10 +80,32 @@ class ExpensePage(Frame):
 class NewUserProfilePage(Frame):
     def __init__(self, parent, controller):
         Frame.__init__(self, parent)
-        Label(self, text="New User Profile page").pack()
+
+        title_frame = Frame(self)
+        title_frame.grid(row=0)
+        Label(title_frame, text="Create a New User").grid(row=0)
+
+        content_frame = Frame(self)
+        content_frame.grid(row=1)
+        Label(content_frame, text="User Name:").grid(row=0, column=0, sticky=E)
+        user_name_entry = Entry(content_frame)
+        user_name_entry.grid(row=0, column=1)
+        Label(content_frame, text="Annual Salary:").grid(row=1, column=0, sticky=E)
+        salary_entry = Entry(content_frame)
+        salary_entry.grid(row=1, column=1)
+        Label(content_frame, text="Expected Additional Income:").grid(row=2, column=0, sticky=E)
+        additional_income_entry = Entry(content_frame)
+        additional_income_entry.grid(row=2, column=1)
+        Label(content_frame, text="Tax Filing Status:").grid(row=3, column=0, sticky=E)
+        tax_entry = Entry(content_frame)
+        tax_entry.grid(row=3, column=1)
+        Label(content_frame, text="Home State:").grid(row=4, column=0, sticky=E)
+        state_entry = Entry(content_frame)
+        state_entry.grid(row=4, column=1)
 
 
 root = Tk()
+root.title("BudgetBro")
 application = BudgetApp(root)
 application.mainloop()
 
