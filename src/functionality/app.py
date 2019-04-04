@@ -52,7 +52,7 @@ class App:
 
     @staticmethod
     def calculate_post_tax_funds(year, state, filing_status, salary, additional_inc, retirement_cont, hsa_cont):
-        gross_income = (salary + additional_inc) - (salary*retirement_cont) - hsa_cont
+        gross_income = (salary + additional_inc) - (salary*(retirement_cont/100)) - hsa_cont
         tax_info = json.loads(App.fetch_tax_information(year, gross_income, state, filing_status))["annual"]
         post_tax_funds = gross_income - (tax_info["fica"]["amount"] + tax_info["federal"]["amount"] + tax_info["state"]["amount"])
         post_tax_funds_by_month = post_tax_funds / 12

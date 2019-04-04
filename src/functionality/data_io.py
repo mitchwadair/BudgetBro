@@ -7,7 +7,7 @@ def get_user_budget_settings(name):
         try:
             user_data_file = open("../../data/" + name + "/user_budget.json", "r")
         except FileNotFoundError:
-            print("User data file not found.")
+            print("User budget data file not found.")
             return None
         else:
             user_data = json.loads(user_data_file.read())
